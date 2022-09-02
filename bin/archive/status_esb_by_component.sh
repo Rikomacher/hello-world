@@ -14,7 +14,7 @@ usage ()
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e ACC -c all"
     echo "    -e | --env      Nom de l'environnement"
-    echo "    -c | --comp     Composant à vérifier (All ou crm ou front ou mycp ou sap ou ap ou pms-prestige ou ramses ou to-interface ou live ou to-connector-csv ou catalog ou to-connector-rategain ou to-connector-expedia ou tars ou editique ou starlight )"
+    echo "    -c | --comp     Composant à arreter (All ou crm ou front ou mycp ou sap ou ap ou pms ou ramses ou to-interface ou live ou to-connector-csv ou catalog ou to-connector-rategain ou to-connector-expedia ou tars ou editique ou starlight )"
     echo "    -h | --help     Affichage de l'aide"
     echo
     exit 1
@@ -48,12 +48,12 @@ then
     usage
 fi
 
-# on recupere le fichier de conf utilise par pvcp_eploy
+# on recupere le fichier de conf utilise par pvcp_deploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcpdeploy/conf/$env/esb.conf $HOME/exploitation/conf/$env/esb.conf
+cp -p  $HOME/pvcp_deploy/conf/$env/esb.conf $HOME/exploitation/conf/$env/esb.conf
 confFile=$HOME/exploitation/conf/$env/esb.conf
 
 # fonction recuperation des noms de serveurs
@@ -92,7 +92,7 @@ statusComponent ()
       exit 1
    fi
      echo "############################################################"
-     echo "       VERIFICATION DU DEMARRAGE de $jbInst sur $appHost "
+     echo "       VERIFICATION DU DEMARRAGE de $component sur $appHost "
      echo "############################################################"
 
      ssh -tT $ADMIN_USER@$appHost sudo systemctl status mule-$jbInst
@@ -265,7 +265,7 @@ then
         getHostName "esbTarsHost"
         esbTarsHostList=`echo $appHost | tr "," "\n"`
         #echo "TARS srv = " $esbTarsHostList
-        for appHost in $esbTarsHostList
+        for appHost in $esbSapHostList
         do
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
@@ -323,6 +323,25 @@ then
         esbconnectorinterfaceHostList=`echo $appHost | tr "," "\n"`
         #echo "TARS srv = " $esbTarsHostList
         for appHost in $esbconnectorinterfaceHostList
+        do
+           isDone=`echo $hostDone | grep $appHost`
+           if [ "$isDone" = "" ]
+           then
+                 statusComponent $jbInst
+                 hostDone=$hostDone,$appHost
+           fi
+        done
+
+        hostDone=""
+
+       # Status Sap
+        jbInst=`echo $env"sap"`
+        #echo $jbInst
+        echo ""
+        getHostName "esbSapHost"
+        esbSapHostList=`echo $appHost | tr "," "\n"`
+        #echo "SAP srv = " $esbSapHostList
+        for appHost in $esbSapHostList
         do
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
@@ -411,11 +430,11 @@ then
 
         hostDone=""
                                                           
-        # Status pms-prestige
-        jbInstt=`echo "mule-"$env"pms-prestige"`
+        # Status Pms
+        jbInstt=`echo "mule-"$env"pms"`
         echo $jbInstt
         echo ""
-        getHostName "esbPms-prestigeHost"
+        getHostName "esbPmsHost"
         esbPmsHostList=`echo $appHost | tr "," "\n"`
         #echo "Pms srv = " $esbPmsHostList
         for appHost in $esbPmsHostList
@@ -425,7 +444,7 @@ then
            then
 
            echo "#######################################################"
-           echo "       STATUS de pms-prestige  sur $appHost "
+           echo "       STATUS de pms  sur $appHost "
            echo "#######################################################"
 
            ssh $ADMIN_USER@$appHost systemctl status $jbInstt
@@ -483,8 +502,8 @@ case $comp in
 	   getHostName "esbApHost";;
         customer )
 		 getHostName "esbCustomerHost";;
-        pms-prestige )
-	    getHostName "esbPms-prestigeHost";;
+        pms )
+	    getHostName "esbPmsHost";;
         * )               echo "Le nom du composant est incorrect"; usage
                           exit 1
 esac
@@ -533,7 +552,7 @@ jbInstt1=`echo "mule-"$env"front"`
            if [ "$isDone" = "" ]
            then
           echo "#######################################################"
-          echo "       STATUS de $jbInsttl sur $appHost "
+          echo "       STATUS de $jbInst1t sur $appHost "
           echo "#######################################################"
 #                 statusComponent $jbInstt1
 		ssh $ADMIN_USER@$appHost systemctl status $jbInstt1

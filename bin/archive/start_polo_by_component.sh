@@ -1,6 +1,6 @@
 #!/bin/bash
 # Creation 07/08/2019 par F. Pimentel
-# Ce sript status le service JBoss pour un ou plusieurs composants POLO
+# Ce sript startpe le service JBoss pour un ou plusieurs composants POLO
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
 ADMIN_USER="pvadmin"
@@ -9,11 +9,11 @@ ADMIN_USER="pvadmin"
 usage ()
 {
     echo
-    echo "Ce sript status le service JBoss pour un ou plusieurs composants POLO"
+    echo "Ce sript startpe le service JBoss pour un ou plusieurs composants POLO"
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e t4 -c all"
     echo "    -e | --env      Nom de l'environnement"
-    echo "    -c | --comp     Composant à vérifier (pgw ou ws ou backoffice ou booking ou async ou rules ou rules-deploy ou polo-batch ou polo-batchCatalog ou ALL)"
+    echo "    -c | --comp     Composant à arreter (pgw ou ws ou backoffice ou booking ou async ou rules ou rules-deploy ou polo-batch ou polo-batchCatalog ou ALL)"
     echo "    -h | --help     Affichage de l'aide"
     echo
     exit 1
@@ -48,12 +48,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcpdeploy
+# on recupere le fichier de conf utilise par pvcp_deploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcpdeploy/conf/$env/polo.conf $HOME/exploitation/conf/$env/polo.conf
+cp -p  $HOME/pvcp_deploy/conf/$env/polo.conf $HOME/exploitation/conf/$env/polo.conf
 confFile=$HOME/exploitation/conf/$env/polo.conf
 
 
@@ -67,32 +67,32 @@ getHostName ()
     appHost=`grep "^$1" $confFile | awk -F '=' '{ print $2 }'`
 }
 
-statusComponent ()
+startComponent ()
 {
    if [ -z "$1" ]
    then
-      echo "Il manque un parametre pour la fonction 'statusComponent'."
+      echo "Il manque un parametre pour la fonction 'startComponent'."
       exit 1
    fi
    if [ -z "$2" ]
    then
-      echo "Il manque un second parametre pour la fonction 'statusComponent'."
+      echo "Il manque un second parametre pour la fonction 'startComponent'."
       exit 1
    fi
      echo "#######################################################"
-     echo "       STATUS de $jbInst sur $appHost "
+     echo "       ARRET de $jbInst sur $appHost "
      echo "#######################################################"
 
-     ssh -t $ADMIN_USER@$appHost sudo systemctl status jboss-$jbInst
+     ssh -t $ADMIN_USER@$appHost sudo systemctl start jboss-$jbInst
 } 
 
 
 if [ $comp == ALL ]
 then
-	#echo "on verifie TOUT"
+	#echo "on arrete TOUT"
 	hostDone=""
 
-	# Paiement Gateway
+	# Arret Paiement Gateway
 	jbInst=`echo $env"pgw.service"`
 	#echo $jbInst 
 	echo ""
@@ -104,15 +104,15 @@ then
 	   isDone=`echo $hostDone | grep $appHost`
 	   if [ "$isDone" = "" ]
 	   then
-	#     statusComponent $appHost jboss-"$env"pgw
-		 statusComponent $appHost $jbInst
+	#     startComponent $appHost jboss-"$env"pgw
+		 startComponent $appHost $jbInst
 		 hostDone=$hostDone,$appHost
 	   fi
 	done
 
 	hostDone=""
 
-	#  WS
+	# Arret WS
 	jbInst=`echo $env"ws.service"`
 	#echo $jbInst
 	echo ""
@@ -124,14 +124,14 @@ then
 	   isDone=`echo $hostDone | grep $appHost`
 	   if [ "$isDone" = "" ]
 	   then
-		 statusComponent $appHost jboss-$jbInst
+		 startComponent $appHost jboss-$jbInst
 		 hostDone=$hostDone,$appHost
 	   fi
 	done
 
 	hostDone=""
 
-	# BackOffice
+	# Arret BackOffice
 	jbInst=`echo $env"backoffice.service"`
 	#echo $jbInst
 	echo ""
@@ -143,14 +143,14 @@ then
 	   isDone=`echo $hostDone | grep $appHost`
 	   if [ "$isDone" = "" ]
 	   then
-		 statusComponent $appHost jboss-$jbInst
+		 startComponent $appHost jboss-$jbInst
 		 hostDone=$hostDone,$appHost
 	   fi
 	done
 
 	hostDone=""
 
-	# Booking
+	# Arret Booking
 	jbInst=`echo $env"booking.service"`
 	#echo $jbInst
 	echo ""
@@ -162,14 +162,14 @@ then
 	   isDone=`echo $hostDone | grep $appHost`
 	   if [ "$isDone" = "" ]
 	   then
-		 statusComponent $appHost jboss-$jbInst
+		 startComponent $appHost jboss-$jbInst
 		 hostDone=$hostDone,$appHost
 	   fi
 	done
 
 	hostDone=""
 
-	# Async
+	# Arret Async
 	jbInst=`echo $env"async.service"`
 	#echo $jbInst
 	echo ""
@@ -181,14 +181,14 @@ then
 	   isDone=`echo $hostDone | grep $appHost`
 	   if [ "$isDone" = "" ]
 	   then
-		 statusComponent $appHost jboss-$jbInst
+		 startComponent $appHost jboss-$jbInst
 		 hostDone=$hostDone,$appHost
 	   fi
 	done
 
 	hostDone=""
 
-	# Rules
+	# Arret Rules
 	jbInst=`echo $env"rules.service"`
 	#echo $jbInst
 	echo ""
@@ -200,7 +200,7 @@ then
 	   isDone=`echo $hostDone | grep $appHost`
 	   if [ "$isDone" = "" ]
 	   then
-		 statusComponent $appHost jboss-$jbInst
+		 startComponent $appHost jboss-$jbInst
 		 hostDone=$hostDone,$appHost
 	   fi
 	done
@@ -208,7 +208,7 @@ then
 
 	hostDone=""
 
-	# Rules-Deploy
+	# Arret Rules-Deploy
 	jbInst=`echo $env"rules-deploy.service"`
 	#echo $jbInst
 	echo ""
@@ -220,14 +220,14 @@ then
 	   isDone=`echo $hostDone | grep $appHost`
 	   if [ "$isDone" = "" ]
 	   then
-		 statusComponent $appHost jboss-$jbInst
+		 startComponent $appHost jboss-$jbInst
 		 hostDone=$hostDone,$appHost
 	   fi
 	done
 
 	hostDone=""
 
-        # polobatch
+        # Arret polobatch
         jbInstt=`echo $env"polo-batch.service"`
         echo $jbInstt
         getHostName "poloBatchHost"
@@ -238,16 +238,16 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       STATUS de $jbInstt sur $appHost "
+           echo "       START de $jbInst1t sur $appHost "
            echo "#######################################################"
-                ssh $ADMIN_USER@$appHost systemctl status $jbInstt
+                ssh -t $ADMIN_USER@$appHost systemctl start $jbInstt
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        # polobatch-catalog
+        # Arret polobatch-catalog
         jbInstt=`echo $env"polo-batch.service"`
         getHostName "poloBatch-catalogHost"
         poloBatchHostsList=`echo $appHost | tr "," "\n"`
@@ -257,9 +257,9 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       STATUS de $jbInstt sur $appHost "
+           echo "       START de $jbInst1t sur $appHost "
            echo "#######################################################"
-                ssh $ADMIN_USER@$appHost systemctl status $jbInstt
+                ssh -t $ADMIN_USER@$appHost systemctl start $jbInstt
                  hostDone=$hostDone,$appHost
            fi
         done
@@ -270,10 +270,10 @@ then
 fi
 
 
-#echo "On verifie un seul composant"
+#echo "On arrete un seul composant"
 hostDone=""
 
-# Verif $env$comp
+# Arret $env$comp
 jbInst=`echo $env$comp`
 echo $jbInst 
 echo ""
@@ -317,9 +317,9 @@ then
 	   if [ "$isDone" = "" ]
 	   then
 	   echo "#######################################################"
-           echo "       STATUS de $jbInst1t sur $appHost "
+           echo "       START de $jbInst1t sur $appHost "
            echo "#######################################################"
-                ssh $ADMIN_USER@$appHost systemctl status $jbInstt
+                ssh -t $ADMIN_USER@$appHost systemctl start $jbInstt
                  hostDone=$hostDone,$appHost
 	   fi
 	done
@@ -339,9 +339,9 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       STATUS de $jbInst1t sur $appHost "
+           echo "       START de $jbInst1t sur $appHost "
            echo "#######################################################"
-                ssh $ADMIN_USER@$appHost systemctl status $jbInstt
+                ssh -t $ADMIN_USER@$appHost systemctl start $jbInstt
                  hostDone=$hostDone,$appHost
            fi
         done
@@ -356,7 +356,7 @@ do
    isDone=`echo $hostDone | grep $appHost`
    if [ "$isDone" = "" ]
    then
-         statusComponent $appHost jboss-$jbInst
+         startComponent $appHost jboss-$jbInst
          hostDone=$hostDone,$appHost
    fi
 done

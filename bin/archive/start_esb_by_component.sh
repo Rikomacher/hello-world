@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 
-# Ce sript affiche le status des services pour un ou plusieurs composants ESB
+# Ce sript affiche le start des services pour un ou plusieurs composants ESB
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
 ADMIN_USER="pvadmin"
@@ -10,11 +10,11 @@ ADMIN_USER="pvadmin"
 usage ()
 {
     echo
-    echo "Ce sript affiche le status des services pour un ou plusieurs composants ESB"
+    echo "Ce sript affiche le start des services pour un ou plusieurs composants ESB"
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e ACC -c all"
     echo "    -e | --env      Nom de l'environnement"
-    echo "    -c | --comp     Composant à vérifier (All ou crm ou front ou mycp ou sap ou ap ou pms-prestige ou ramses ou to-interface ou live ou to-connector-csv ou catalog ou to-connector-rategain ou to-connector-expedia ou tars ou editique ou starlight )"
+    echo "    -c | --comp     Composant à arreter (All ou crm ou front ou mycp ou sap ou ap ou pms ou ramses ou to-interface ou live ou to-connector-csv ou catalog ou to-connector-rategain ou to-connector-expedia ou tars ou editique ou starlight)"
     echo "    -h | --help     Affichage de l'aide"
     echo
     exit 1
@@ -48,12 +48,12 @@ then
     usage
 fi
 
-# on recupere le fichier de conf utilise par pvcp_eploy
+# on recupere le fichier de conf utilise par pvcp_deploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcpdeploy/conf/$env/esb.conf $HOME/exploitation/conf/$env/esb.conf
+cp -p  $HOME/pvcp_deploy/conf/$env/esb.conf $HOME/exploitation/conf/$env/esb.conf
 confFile=$HOME/exploitation/conf/$env/esb.conf
 
 # fonction recuperation des noms de serveurs
@@ -79,23 +79,23 @@ getHostNameconnector ()
 }
 
 # fonction redemarrage d'une instance
-statusComponent ()
+startComponent ()
 {
    if [ -z "$1" ]
    then
-      echo "Il manque un parametre pour la fonction 'statusComponent'."
+      echo "Il manque un parametre pour la fonction 'startComponent'."
       exit 1
    fi
    if [ -z "$1" ]
    then
-      echo "Il manque un second parametre pour la fonction 'statusComponent'."
+      echo "Il manque un second parametre pour la fonction 'startComponent'."
       exit 1
    fi
-     echo "############################################################"
-     echo "       VERIFICATION DU DEMARRAGE de $jbInst sur $appHost "
-     echo "############################################################"
+     echo "#######################################################"
+     echo "       DEMARRAGE de $component sur $appHost "
+     echo "#######################################################"
 
-     ssh -tT $ADMIN_USER@$appHost sudo systemctl status mule-$jbInst
+     ssh -tT $ADMIN_USER@$appHost sudo systemctl start mule-$jbInst
 
 }
 
@@ -105,7 +105,7 @@ then
         #echo "on affiche le statut TOUT"
         hostDone=""
 
-        # Status CRM
+        # Stop CRM
         jbInst=`echo $env"crm"`
         #echo $jbInst
         echo ""
@@ -117,14 +117,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent  $jbInst
+                 startComponent  $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        # Status Front
+        # Stop Front
         jbInst=`echo $env"front"`
         #echo $jbInst
         echo ""
@@ -136,14 +136,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent  $jbInst
+                 startComponent  $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-       # Status Sap
+       # Stop Sap
         jbInst=`echo $env"sap"`
         #echo $jbInst
         echo ""
@@ -155,14 +155,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
         
-         # Status Starlight
+         # Stop Starlight
         jbInst=`echo $env"starlight"`
         #echo $jbInst
         echo ""
@@ -175,14 +175,14 @@ then
            if [ "$isDone" = "" ]
            then
 
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-       # Status Editique
+       # Stop Editique
         jbInst=`echo $env"editique"`
         #echo $jbInst
         echo ""
@@ -194,14 +194,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        #Status esbTo-connector-expedia
+        #Stop esbTo-connector-expedia
         jbInst=`echo $env"to-connector-expedia"`
         #echo $jbInst
         echo ""
@@ -213,14 +213,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        #Status esbTo-connector-rategain
+        #Stop esbTo-connector-rategain
         jbInst=`echo $env"to-connector-rategain"`
         #echo $jbInst
         echo ""
@@ -232,14 +232,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        #Status esbTo-connector-csv
+        #Stop esbTo-connector-csv
         jbInst=`echo $env"to-connector-csv"`
         #echo $jbInst
         echo ""
@@ -251,33 +251,33 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-       # Status Tars
+       # Stop Tars
         jbInst=`echo $env"tars"`
         #echo $jbInst
         echo ""
         getHostName "esbTarsHost"
         esbTarsHostList=`echo $appHost | tr "," "\n"`
         #echo "TARS srv = " $esbTarsHostList
-        for appHost in $esbTarsHostList
+        for appHost in $esbSapHostList
         do
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-       # Status catalog
+       # Stop catalog
         jbInst=`echo $env"catalog"`
         #echo $jbInst
         echo ""
@@ -289,14 +289,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
         
-        # Status live
+        # Stop live
         jbInst=`echo $env"live"`
         #echo $jbInst
         echo ""
@@ -308,14 +308,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        #Status esbTo-connector-expedia
+        #Stop esbTo-connector-expedia
         jbInst=`echo $env"to-interface"`
         #echo $jbInst
         echo ""
@@ -327,14 +327,33 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        # Status ramses
+       # Stop Sap
+        jbInst=`echo $env"sap"`
+        #echo $jbInst
+        echo ""
+        getHostName "esbSapHost"
+        esbSapHostList=`echo $appHost | tr "," "\n"`
+        #echo "SAP srv = " $esbSapHostList
+        for appHost in $esbSapHostList
+        do
+           isDone=`echo $hostDone | grep $appHost`
+           if [ "$isDone" = "" ]
+           then
+                 startComponent $jbInst
+                 hostDone=$hostDone,$appHost
+           fi
+        done
+
+        hostDone=""
+
+        # Stop ramses
         jbInst=`echo $env"ramses"`
         #echo $jbInst
         echo ""
@@ -346,14 +365,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        # Status ap
+        # Stop ap
         jbInst=`echo $env"ap"`
         #echo $jbInst
         echo ""
@@ -365,14 +384,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        # Status customer
+        # Stop customer
         jbInst=`echo $env"customer"`
         #echo $jbInst
         echo ""
@@ -384,14 +403,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
 	hostDone=""
 
-        #Status Mycp
+        #Stop Mycp
 	jbInstt1=`echo "mule-"$env"front"`
 
         getHostName "esbMycpHost"
@@ -402,20 +421,20 @@ then
            if [ "$isDone" = "" ]
            then
           echo "#######################################################"
-          echo "       STATUS de $jbInstt1 sur $appHost "
+          echo "       START de $jbInstt1 sur $appHost "
           echo "#######################################################"
-                ssh $ADMIN_USER@$appHost systemctl status $jbInstt1
+                ssh $ADMIN_USER@$appHost systemctl start $jbInstt1
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
                                                           
-        # Status pms-prestige
-        jbInstt=`echo "mule-"$env"pms-prestige"`
+        # Stop Pms
+        jbInstt=`echo "mule-"$env"pms"`
         echo $jbInstt
         echo ""
-        getHostName "esbPms-prestigeHost"
+        getHostName "esbPmsHost"
         esbPmsHostList=`echo $appHost | tr "," "\n"`
         #echo "Pms srv = " $esbPmsHostList
         for appHost in $esbPmsHostList
@@ -425,10 +444,10 @@ then
            then
 
            echo "#######################################################"
-           echo "       STATUS de pms-prestige  sur $appHost "
+           echo "       START de pms  sur $appHost "
            echo "#######################################################"
 
-           ssh $ADMIN_USER@$appHost systemctl status $jbInstt
+           ssh $ADMIN_USER@$appHost systemctl start $jbInstt
 
                  hostDone=$hostDone,$appHost
            fi
@@ -483,8 +502,8 @@ case $comp in
 	   getHostName "esbApHost";;
         customer )
 		 getHostName "esbCustomerHost";;
-        pms-prestige )
-	    getHostName "esbPms-prestigeHost";;
+        pms )
+	    getHostName "esbPmsHost";;
         * )               echo "Le nom du composant est incorrect"; usage
                           exit 1
 esac
@@ -499,7 +518,7 @@ do
    isDone=`echo $hostDone | grep $appHost`
    if [ "$isDone" = "" ]
    then
-         statusComponent $appHost mule-$jbInst
+         startComponent $appHost mule-$jbInst
          hostDone=$hostDone,$appHost
    fi
 done
@@ -514,7 +533,7 @@ do
    isDone=`echo $hostDone | grep $appHost`
    if [ "$isDone" = "" ]
    then
-         statusComponent $appHost mule-$jbInstt
+         startComponent $appHost mule-$jbInstt
          hostDone=$hostDone,$appHost
    fi
 done
@@ -524,7 +543,7 @@ hostDone=""
 jbInstt1=`echo "mule-"$env"front"`
     if [ "$comp" == "mycp" ];
     then
-        #Status Mycp
+        #Start Mycp
         getHostName "esbMycpHost"
         esbMycpHostList=`echo $appHost | tr "," "\n"`
         for appHost in $esbMycpHostList
@@ -533,10 +552,10 @@ jbInstt1=`echo "mule-"$env"front"`
            if [ "$isDone" = "" ]
            then
           echo "#######################################################"
-          echo "       STATUS de $jbInsttl sur $appHost "
+          echo "       START de $jbInst1t sur $appHost "
           echo "#######################################################"
-#                 statusComponent $jbInstt1
-		ssh $ADMIN_USER@$appHost systemctl status $jbInstt1
+#                 startComponent $jbInstt1
+		ssh $ADMIN_USER@$appHost systemctl start $jbInstt1
                  hostDone=$hostDone,$appHost
            fi
         done

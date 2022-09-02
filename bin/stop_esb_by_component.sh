@@ -14,7 +14,7 @@ usage ()
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e ACC -c all"
     echo "    -e | --env      Nom de l'environnement"
-    echo "    -c | --comp     Composant à arreter (All ou crm ou front ou mycp ou sap ou ap ou pms ou ramses ou to-interface ou live ou to-connector-csv ou catalog ou to-connector-rategain ou to-connector-expedia ou tars ou editique ou starlight)"
+    echo "    -c | --comp     Composant à arreter (All ou crm ou front ou mycp ou sap ou ap ou pms-prestige ou ramses ou to-interface ou live ou to-connector-csv ou catalog ou to-connector-rategain ou to-connector-expedia ou tars ou editique ou starlight)"
     echo "    -h | --help     Affichage de l'aide"
     echo
     exit 1
@@ -48,12 +48,12 @@ then
     usage
 fi
 
-# on recupere le fichier de conf utilise par pvcp_deploy
+# on recupere le fichier de conf utilise par pvcpdeploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcp_deploy/conf/$env/esb.conf $HOME/exploitation/conf/$env/esb.conf
+cp -p  $HOME/pvcpdeploy/conf/$env/esb.conf $HOME/exploitation/conf/$env/esb.conf
 confFile=$HOME/exploitation/conf/$env/esb.conf
 
 # fonction recuperation des noms de serveurs
@@ -92,7 +92,7 @@ stopComponent ()
       exit 1
    fi
      echo "#######################################################"
-     echo "       ARRET de $component sur $appHost "
+     echo "       ARRET de $jbInst sur $appHost "
      echo "#######################################################"
 
      ssh -tT $ADMIN_USER@$appHost sudo systemctl stop mule-$jbInst
@@ -113,25 +113,6 @@ then
         esbCrmHostList=`echo $appHost | tr "," "\n"`
         #echo "CRM srv = " $esbCrmHostList
         for appHost in $esbCrmHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent  $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-
-        # Stop Front
-        jbInst=`echo $env"front"`
-        #echo $jbInst
-        echo ""
-        getHostName "esbFrontHost"
-        esbFrontHostList=`echo $appHost | tr "," "\n"`
-        #echo "FRONT srv = " $esbFrontHostList
-        for appHost in $esbFrontHostList
         do
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
@@ -265,7 +246,7 @@ then
         getHostName "esbTarsHost"
         esbTarsHostList=`echo $appHost | tr "," "\n"`
         #echo "TARS srv = " $esbTarsHostList
-        for appHost in $esbSapHostList
+        for appHost in $esbTarsHostList
         do
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
@@ -323,25 +304,6 @@ then
         esbconnectorinterfaceHostList=`echo $appHost | tr "," "\n"`
         #echo "TARS srv = " $esbTarsHostList
         for appHost in $esbconnectorinterfaceHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-
-       # Stop Sap
-        jbInst=`echo $env"sap"`
-        #echo $jbInst
-        echo ""
-        getHostName "esbSapHost"
-        esbSapHostList=`echo $appHost | tr "," "\n"`
-        #echo "SAP srv = " $esbSapHostList
-        for appHost in $esbSapHostList
         do
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
@@ -430,11 +392,11 @@ then
 
         hostDone=""
                                                           
-        # Stop Pms
-        jbInstt=`echo "mule-"$env"pms"`
+        # Stop pms-prestige
+        jbInstt=`echo "mule-"$env"pms-prestige"`
         echo $jbInstt
         echo ""
-        getHostName "esbPmsHost"
+        getHostName "esbPms-prestigeHost"
         esbPmsHostList=`echo $appHost | tr "," "\n"`
         #echo "Pms srv = " $esbPmsHostList
         for appHost in $esbPmsHostList
@@ -444,7 +406,7 @@ then
            then
 
            echo "#######################################################"
-           echo "       STOP de pms  sur $appHost "
+           echo "       STOP de pms-prestige  sur $appHost "
            echo "#######################################################"
 
            ssh $ADMIN_USER@$appHost systemctl stop $jbInstt
@@ -454,6 +416,23 @@ then
         done
 
         hostDone=""
+
+        # Stop Front
+        jbInst=`echo $env"front"`
+        #echo $jbInst
+        echo ""
+        getHostName "esbFrontHost"
+        esbFrontHostList=`echo $appHost | tr "," "\n"`
+        #echo "FRONT srv = " $esbFrontHostList
+        for appHost in $esbFrontHostList
+        do
+           isDone=`echo $hostDone | grep $appHost`
+           if [ "$isDone" = "" ]
+           then
+                 stopComponent  $jbInst
+                 hostDone=$hostDone,$appHost
+           fi
+        done
 
 
         exit 0
@@ -502,8 +481,8 @@ case $comp in
 	   getHostName "esbApHost";;
         customer )
 		 getHostName "esbCustomerHost";;
-        pms )
-	    getHostName "esbPmsHost";;
+        pms-prestige )
+	    getHostName "esbPms-prestigeHost";;
         * )               echo "Le nom du composant est incorrect"; usage
                           exit 1
 esac
@@ -552,7 +531,7 @@ jbInstt1=`echo "mule-"$env"front"`
            if [ "$isDone" = "" ]
            then
           echo "#######################################################"
-          echo "       STOP de $jbInst1t sur $appHost "
+          echo "       STOP de $jbInsttl sur $appHost "
           echo "#######################################################"
 #                 stopComponent $jbInstt1
 		ssh $ADMIN_USER@$appHost systemctl stop $jbInstt1

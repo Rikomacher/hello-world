@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ce sript affiche le status des services pour un ou plusieurs composants PARISOPEN
+# Ce sript démarre les services pour un ou plusieurs composants PARISOPEN
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
 ADMIN_USER="pvadmin"
@@ -8,7 +8,7 @@ ADMIN_USER="pvadmin"
 usage ()
 {
     echo
-    echo "Ce sript affiche le status des services pour un ou plusieurs composants PARISOPEN"
+    echo "Ce sript démarre les services pour un ou plusieurs composants PARISOPEN"
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e t4 -c all"
     echo "    -e | --env      Nom de l'environnement"
@@ -47,12 +47,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcpdeploy
+# on recupere le fichier de conf utilise par pvcp_deploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcpdeploy/conf/$env/parisopen.conf $HOME/exploitation/conf/$env/parisopen.conf
+cp -p  $HOME/pvcp_deploy/conf/$env/parisopen.conf $HOME/exploitation/conf/$env/parisopen.conf
 confFile=$HOME/exploitation/conf/$env/parisopen.conf
 
 
@@ -66,23 +66,23 @@ getHostName ()
     appHost=`grep "^$1" $confFile | awk -F '=' '{ print $2 }'`
 }
 
-statusComponent ()
+startComponent ()
 {
    if [ -z "$1" ]
    then
-      echo "Il manque un parametre pour la fonction 'statusComponent'."
+      echo "Il manque un parametre pour la fonction 'startComponent'."
       exit 1
    fi
    if [ -z "$1" ]
    then
-      echo "Il manque un second parametre pour la fonction 'statusComponent'."
+      echo "Il manque un second parametre pour la fonction 'startComponent'."
       exit 1
    fi
      echo "#######################################################"
-     echo "       STATUS de $jbInst sur $appHost "
+     echo "       START de $jbInst sur $appHost "
      echo "#######################################################"
 
-     ssh $ADMIN_USER@$appHost systemctl status jboss-$jbInst      
+     ssh $ADMIN_USER@$appHost sudo systemctl start jboss-$jbInst
 }
 
 
@@ -91,10 +91,10 @@ statusComponent ()
 
 if [ $comp == ALL ]
 then
-        #echo "on affiche le statut TOUT"
+        #echo "on arrete TOUT"
         hostDone=""
 
-        # Status WEB
+        # Start WEB
         jbInst=`echo $env"parisopenweb.service"`
         #echo $jbInst
         echo ""
@@ -106,14 +106,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent  $jbInst
+                 startComponent  $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        # Status WS
+        # Start WS
         jbInst=`echo $env"parisopenws.service"`
         #echo $jbInst
         echo ""
@@ -125,14 +125,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent  $jbInst
+                 startComponent  $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-         # Status CACHE
+         # Start CACHE
         jbInst=`echo $env"parisopencache.service"`
         #echo $jbInst
         echo ""
@@ -144,15 +144,16 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-        
-                 statusComponent $jbInst
+
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-       # Status Back Office
+
+       # Start Back Office
         jbInst=`echo $env"parisopenbo.service"`
         #echo $jbInst
         echo ""
@@ -164,14 +165,14 @@ then
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
            then
-                 statusComponent $jbInst
+                 startComponent $jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-        # Status RES ASYNC
+        # Start RES ASYNC
         jbInstt=`echo $env"-resAsync.service"`
         echo $jbInstt
         echo ""
@@ -185,26 +186,26 @@ then
            then
 
            echo "#######################################################"
-           echo "       STATUS de Async  sur $appHost "
+           echo "       Arret de Async  sur $appHost "
            echo "#######################################################"
 
-           ssh $ADMIN_USER@$appHost systemctl status $jbInstt
-           
+           ssh $ADMIN_USER@$appHost  systemctl start $jbInstt
+
                  hostDone=$hostDone,$appHost
            fi
         done
 
         hostDone=""
 
-         
+
         exit 0
 fi
 
 
-#echo "On arrete un seul composant"
+#echo "On démarre un seul composant"
 hostDone=""
 
-# Arret $env"parisopen"$comp
+# Start $env"parisopen"$comp
 jbInst=`echo $env"parisopen"$comp`
 jbInstt=`echo $env"-res"$comp`
 echo $jbInst
@@ -222,14 +223,14 @@ case $comp in
 
         Async )
             getHostName "parisopenResasyncHost";;
-       
+
         * )
             echo "Le nom du composant est incorrect"; usage
             exit 1
     esac
 
 if [ $comp != Async ]
-then 
+then
 
 parisopenHostsList=`echo $appHost | tr "," "\n"`
 #echo "srv = " $parisopenHostsList
@@ -238,7 +239,7 @@ do
    isDone=`echo $hostDone | grep $appHost`
    if [ "$isDone" = "" ]
    then
-         statusComponent $appHost $jbInst
+         startComponent $appHost $jbInst
          hostDone=$hostDone,$appHost
    fi
 done
@@ -259,10 +260,10 @@ then
            if [ "$isDone" = "" ]
            then
           echo "#######################################################"
-          echo "       STATUS de $jbInstt sur $appHost "
-          echo "#######################################################"   
-    
-       ssh $ADMIN_USER@$appHost systemctl status $jbInstt
+          echo "       Start de $jbInstt sur $appHost "
+          echo "#######################################################"
+
+       ssh $ADMIN_USER@$appHost systemctl start $jbInstt
                 #hostDone=$hostDone,$appHost
            fi
         done

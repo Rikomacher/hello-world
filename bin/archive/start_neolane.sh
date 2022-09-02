@@ -1,4 +1,4 @@
-e sript affiche le status des services pour un ou plusieurs composants PARISOPEN
+#!/bin/bash
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
 ADMIN_USER="root"

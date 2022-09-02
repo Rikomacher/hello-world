@@ -1,5 +1,5 @@
 #!/bin/bash
-#Ce sript affiche le start des services pour un ou plusieurs composants CIAO.
+#Ce sript affiche le status des services pour un ou plusieurs composants CIAO.
 #Il est spécifique à l'application CIAO qui fonctionne sur deux OS différent.
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
@@ -9,7 +9,7 @@ ADMIN_USER="pvadmin"
 usage ()
 {
     echo
-    echo "Ce sript affiche le start des services pour un ou plusieurs composants CIAO"
+    echo "Ce sript affiche le status des services pour un ou plusieurs composants CIAO"
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e t4 -c all"
     echo "    -e | --env      Nom de l'environnement"
@@ -48,12 +48,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcpdeploy
+# on recupere le fichier de conf utilise par pvcp_deploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcpdeploy/conf/$env/ciao2.conf $HOME/exploitation/conf/$env/ciao2.conf
+cp -p  $HOME/pvcp_deploy/conf/$env/ciao2.conf $HOME/exploitation/conf/$env/ciao2.conf
 confFile=$HOME/exploitation/conf/$env/ciao2.conf
 
 
@@ -67,42 +67,41 @@ getHostName ()
     appHost=`grep "^$1" $confFile | awk -F '=' '{ print $2 }'`
 }
 
-startComponent6 ()
+statusComponent6 ()
 {
    if [ -z "$1" ]
    then
-      echo "Il manque un parametre pour la fonction 'startComponent'."
+      echo "Il manque un parametre pour la fonction 'statusComponent'."
       exit 1
    fi
    if [ -z "$2" ]
    then
-      echo "Il manque un second parametre pour la fonction 'startComponent'."
+      echo "Il manque un second parametre pour la fonction 'statusComponent'."
       exit 1
    fi
      echo "#######################################################"
-     echo "       START de $jbInst sur $appHost "
+     echo "       STATUS de $jbInst sur $appHost "
      echo "#######################################################"
-     ssh -tT $ADMIN_USER@$appHost sudo /etc/init.d/jboss-$jbInstt start
+     ssh -tT $ADMIN_USER@$appHost /etc/init.d/jboss-$jbInstt status
 }
 
-startComponent7 ()
+statusComponent7 ()
 {
    if [ -z "$1" ]
    then
-      echo "Il manque un parametre pour la fonction 'startComponent'."
+      echo "Il manque un parametre pour la fonction 'statusComponent'."
       exit 1
    fi
    if [ -z "$2" ]
    then
-      echo "Il manque un second parametre pour la fonction 'startComponent'."
+      echo "Il manque un second parametre pour la fonction 'statusComponent'."
       exit 1
    fi
      echo "#######################################################"
-     echo "       START de $jbInst sur $appHost "
+     echo "       STATUS de $jbInst sur $appHost "
      echo "#######################################################"
-     ssh -tT $ADMIN_USER@$appHost sudo systemctl start jboss-$jbInst
+     ssh -tT $ADMIN_USER@$appHost systemctl status jboss-$jbInst
 }
-
 
 if [ $comp == ALL ]
 then
@@ -120,17 +119,18 @@ then
         for appHost in $ciao2WebHostsList
         do
 		echo "$appHost : "
+
 	oslevel=$(ssh $ADMIN_USER@$appHost cat "/etc/centos-release" |awk '{print $4}' |cut -d "." -f1) 
 	  echo $oslevel
 
 		if [ "$oslevel" == "7" ]
 		then
 	 	echo "OS 7"
-               	startComponent7 $appHost jboss-$jbInst
+               	statusComponent7 $appHost jboss-$jbInst
                	hostDone=$hostDone,$appHost
                 else [ "$oslevel" != "7" ]
                  echo "OS 6"
-                 startComponent6 $appHost jboss-$jbInstt
+                 statusComponent6 $appHost jboss-$jbInstt
                  hostDone=$hostDone,$appHost
 
 		fi
