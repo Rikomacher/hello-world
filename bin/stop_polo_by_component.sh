@@ -1,6 +1,6 @@
 #!/bin/bash
 # Creation 07/08/2019 par F. Pimentel
-# Ce sript statuspe le service JBoss pour un ou plusieurs composants POLO
+# Ce sript stoppe le service JBoss pour un ou plusieurs composants POLO
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
 ADMIN_USER="pvadmin"
@@ -9,7 +9,7 @@ ADMIN_USER="pvadmin"
 usage ()
 {
     echo
-    echo "Ce sript statuspe le service JBoss pour un ou plusieurs composants POLO"
+    echo "Ce sript stoppe le service JBoss pour un ou plusieurs composants POLO"
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e t4 -c all"
     echo "    -e | --env      Nom de l'environnement"
@@ -48,12 +48,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcp_deploy
+# on recupere le fichier de conf utilise par pvcpdeploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcp_deploy/conf/$env/polo.conf $HOME/exploitation/conf/$env/polo.conf
+cp -p  $HOME/pvcpdeploy/conf/$env/polo.conf $HOME/exploitation/conf/$env/polo.conf
 confFile=$HOME/exploitation/conf/$env/polo.conf
 
 
@@ -238,7 +238,7 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       ARRET de $jbInst1t sur $appHost "
+           echo "       ARRET de $jbInstt sur $appHost "
            echo "#######################################################"
                 ssh -t $ADMIN_USER@$appHost systemctl status $jbInstt
                  hostDone=$hostDone,$appHost
@@ -257,7 +257,7 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       ARRET de $jbInst1t sur $appHost "
+           echo "       ARRET de $jbInstt sur $appHost "
            echo "#######################################################"
                 ssh -t $ADMIN_USER@$appHost systemctl status $jbInstt
                  hostDone=$hostDone,$appHost
@@ -317,7 +317,7 @@ then
 	   if [ "$isDone" = "" ]
 	   then
 	   echo "#######################################################"
-           echo "       ARRET de $jbInst1t sur $appHost "
+           echo "       ARRET de $jbInstt sur $appHost "
            echo "#######################################################"
                 ssh -t $ADMIN_USER@$appHost systemctl status $jbInstt
                  hostDone=$hostDone,$appHost
@@ -339,7 +339,7 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       ARRET de $jbInst1t sur $appHost "
+           echo "       ARRET de $jbInstt sur $appHost "
            echo "#######################################################"
                 ssh -t $ADMIN_USER@$appHost systemctl status $jbInstt
                  hostDone=$hostDone,$appHost

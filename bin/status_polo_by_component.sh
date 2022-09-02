@@ -1,6 +1,6 @@
 #!/bin/bash
 # Creation 07/08/2019 par F. Pimentel
-# Ce sript statuspe le service JBoss pour un ou plusieurs composants POLO
+# Ce sript status le service JBoss pour un ou plusieurs composants POLO
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
 ADMIN_USER="pvadmin"
@@ -9,11 +9,11 @@ ADMIN_USER="pvadmin"
 usage ()
 {
     echo
-    echo "Ce sript statuspe le service JBoss pour un ou plusieurs composants POLO"
+    echo "Ce sript status le service JBoss pour un ou plusieurs composants POLO"
     echo "usage: `basename $0` -OPTIONS"
     echo "Exemple : `basename $0` -e t4 -c all"
     echo "    -e | --env      Nom de l'environnement"
-    echo "    -c | --comp     Composant à arreter (pgw ou ws ou backoffice ou booking ou async ou rules ou rules-deploy ou polo-batch ou polo-batchCatalog ou ALL)"
+    echo "    -c | --comp     Composant à vérifier (pgw ou ws ou backoffice ou booking ou async ou rules ou rules-deploy ou polo-batch ou polo-batchCatalog ou ALL)"
     echo "    -h | --help     Affichage de l'aide"
     echo
     exit 1
@@ -48,12 +48,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcp_deploy
+# on recupere le fichier de conf utilise par pvcpdeploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcp_deploy/conf/$env/polo.conf $HOME/exploitation/conf/$env/polo.conf
+cp -p  $HOME/pvcpdeploy/conf/$env/polo.conf $HOME/exploitation/conf/$env/polo.conf
 confFile=$HOME/exploitation/conf/$env/polo.conf
 
 
@@ -80,7 +80,7 @@ statusComponent ()
       exit 1
    fi
      echo "#######################################################"
-     echo "       ARRET de $jbInst sur $appHost "
+     echo "       STATUS de $jbInst sur $appHost "
      echo "#######################################################"
 
      ssh -t $ADMIN_USER@$appHost sudo systemctl status jboss-$jbInst
@@ -89,10 +89,10 @@ statusComponent ()
 
 if [ $comp == ALL ]
 then
-	#echo "on arrete TOUT"
+	#echo "on verifie TOUT"
 	hostDone=""
 
-	# Arret Paiement Gateway
+	# Paiement Gateway
 	jbInst=`echo $env"pgw.service"`
 	#echo $jbInst 
 	echo ""
@@ -112,7 +112,7 @@ then
 
 	hostDone=""
 
-	# Arret WS
+	#  WS
 	jbInst=`echo $env"ws.service"`
 	#echo $jbInst
 	echo ""
@@ -131,7 +131,7 @@ then
 
 	hostDone=""
 
-	# Arret BackOffice
+	# BackOffice
 	jbInst=`echo $env"backoffice.service"`
 	#echo $jbInst
 	echo ""
@@ -150,7 +150,7 @@ then
 
 	hostDone=""
 
-	# Arret Booking
+	# Booking
 	jbInst=`echo $env"booking.service"`
 	#echo $jbInst
 	echo ""
@@ -169,7 +169,7 @@ then
 
 	hostDone=""
 
-	# Arret Async
+	# Async
 	jbInst=`echo $env"async.service"`
 	#echo $jbInst
 	echo ""
@@ -188,7 +188,7 @@ then
 
 	hostDone=""
 
-	# Arret Rules
+	# Rules
 	jbInst=`echo $env"rules.service"`
 	#echo $jbInst
 	echo ""
@@ -208,7 +208,7 @@ then
 
 	hostDone=""
 
-	# Arret Rules-Deploy
+	# Rules-Deploy
 	jbInst=`echo $env"rules-deploy.service"`
 	#echo $jbInst
 	echo ""
@@ -227,7 +227,7 @@ then
 
 	hostDone=""
 
-        # Arret polobatch
+        # polobatch
         jbInstt=`echo $env"polo-batch.service"`
         echo $jbInstt
         getHostName "poloBatchHost"
@@ -238,7 +238,7 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       STATUS de $jbInst1t sur $appHost "
+           echo "       STATUS de $jbInstt sur $appHost "
            echo "#######################################################"
                 ssh $ADMIN_USER@$appHost systemctl status $jbInstt
                  hostDone=$hostDone,$appHost
@@ -247,7 +247,7 @@ then
 
         hostDone=""
 
-        # Arret polobatch-catalog
+        # polobatch-catalog
         jbInstt=`echo $env"polo-batch.service"`
         getHostName "poloBatch-catalogHost"
         poloBatchHostsList=`echo $appHost | tr "," "\n"`
@@ -257,7 +257,7 @@ then
            if [ "$isDone" = "" ]
            then
            echo "#######################################################"
-           echo "       STATUS de $jbInst1t sur $appHost "
+           echo "       STATUS de $jbInstt sur $appHost "
            echo "#######################################################"
                 ssh $ADMIN_USER@$appHost systemctl status $jbInstt
                  hostDone=$hostDone,$appHost
@@ -270,10 +270,10 @@ then
 fi
 
 
-#echo "On arrete un seul composant"
+#echo "On verifie un seul composant"
 hostDone=""
 
-# Arret $env$comp
+# Verif $env$comp
 jbInst=`echo $env$comp`
 echo $jbInst 
 echo ""

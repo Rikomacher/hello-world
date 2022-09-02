@@ -48,12 +48,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcp_deploy
+# on recupere le fichier de conf utilise par pvcpdeploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcp_deploy/conf/$env/ciao2.conf $HOME/exploitation/conf/$env/ciao2.conf
+cp -p  $HOME/pvcpdeploy/conf/$env/ciao2.conf $HOME/exploitation/conf/$env/ciao2.conf
 confFile=$HOME/exploitation/conf/$env/ciao2.conf
 
 

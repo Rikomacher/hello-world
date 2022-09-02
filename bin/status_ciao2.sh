@@ -1,6 +1,8 @@
 #!/bin/bash
 #Ce sript affiche le status des services pour un ou plusieurs composants CIAO.
 #Il est spécifique à l'application CIAO qui fonctionne sur deux OS différent.
+#set -x
+
 PRG=`dirname $0`
 CURRENT_DIR=`cd "$PRG" && pwd`
 ADMIN_USER="pvadmin"
@@ -11,9 +13,9 @@ usage ()
     echo
     echo "Ce sript affiche le status des services pour un ou plusieurs composants CIAO"
     echo "usage: `basename $0` -OPTIONS"
-    echo "Exemple : `basename $0` -e t4 -c all"
+    echo "Exemple : `basename $0` -e TST -c ALL"
     echo "    -e | --env      Nom de l'environnement"
-    echo "    -c | --ALL     Composant à arreter (All)"
+    echo "    -c | --ALL     Composant à vérifier (All)"
     echo "    -h | --help     Affichage de l'aide"
     echo
     exit 1
@@ -48,12 +50,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcp_deploy
+# on recupere le fichier de conf utilise par pvcpdeploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcp_deploy/conf/$env/ciao2.conf $HOME/exploitation/conf/$env/ciao2.conf
+cp -p  $HOME/pvcpdeploy/conf/$env/ciao2.conf $HOME/exploitation/conf/$env/ciao2.conf
 confFile=$HOME/exploitation/conf/$env/ciao2.conf
 
 

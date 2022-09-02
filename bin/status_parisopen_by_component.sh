@@ -47,12 +47,12 @@ then
 fi
 
 
-# on recupere le fichier de conf utilise par pvcp_deploy
+# on recupere le fichier de conf utilise par pvcpdeploy
 if [ ! -d $HOME/exploitation/conf/$env ]
 then
     mkdir -p $HOME/exploitation/conf/$env
 fi
-cp -p  $HOME/pvcp_deploy/conf/$env/parisopen.conf $HOME/exploitation/conf/$env/parisopen.conf
+cp -p  $HOME/pvcpdeploy/conf/$env/parisopen.conf $HOME/exploitation/conf/$env/parisopen.conf
 confFile=$HOME/exploitation/conf/$env/parisopen.conf
 
 
