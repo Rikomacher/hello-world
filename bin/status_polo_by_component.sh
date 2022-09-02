@@ -229,7 +229,7 @@ then
 
         # polobatch
         jbInstt=`echo $env"polo-batch.service"`
-        echo $jbInstt
+        #echo $jbInstt
         getHostName "poloBatchHost"
         poloHostsList=`echo $appHost | tr "," "\n"`
         for appHost in $poloHostsList

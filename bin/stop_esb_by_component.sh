@@ -12,9 +12,9 @@ usage ()
     echo
     echo "Ce sript affiche le stop des services pour un ou plusieurs composants ESB"
     echo "usage: `basename $0` -OPTIONS"
-    echo "Exemple : `basename $0` -e ACC -c all"
+    echo "Exemple : `basename $0` -e ACC -c ALL"
     echo "    -e | --env      Nom de l'environnement"
-    echo "    -c | --comp     Composant à arreter (All ou crm ou front ou mycp ou sap ou ap ou pms-prestige ou ramses ou to-interface ou live ou to-connector-csv ou catalog ou to-connector-rategain ou to-connector-expedia ou tars ou editique ou starlight)"
+    echo "    -c | --comp     Composant à arreter (ALL ou crm ou front ou mycp ou sap ou ap ou pms-prestige ou pms-misterbooking ou pms-dedge ou ramses ou tars ou editique ou starlight )"
     echo "    -h | --help     Affichage de l'aide"
     echo
     exit 1
@@ -182,63 +182,6 @@ then
 
         hostDone=""
 
-        #Stop esbTo-connector-expedia
-        jbInst=`echo $env"to-connector-expedia"`
-        #echo $jbInst
-        echo ""
-        getHostNameconnector "expediaHost"
-        esbconnectorexpediaHostList=`echo $appHost | tr "," "\n"`
-        #echo "TARS srv = " $esbTarsHostList
-        for appHost in $esbconnectorexpediaHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-
-        #Stop esbTo-connector-rategain
-        jbInst=`echo $env"to-connector-rategain"`
-        #echo $jbInst
-        echo ""
-        getHostNameconnector "rategainHost"
-        esbconnectorrategainHostList=`echo $appHost | tr "," "\n"`
-        #echo "TARS srv = " $esbTarsHostList
-        for appHost in $esbconnectorrategainHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-
-        #Stop esbTo-connector-csv
-        jbInst=`echo $env"to-connector-csv"`
-        #echo $jbInst
-        echo ""
-        getHostNameconnector "csvHost"
-        esbconnectorcsvHostList=`echo $appHost | tr "," "\n"`
-        #echo "TARS srv = " $esbTarsHostList
-        for appHost in $esbconnectorcsvHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-
        # Stop Tars
         jbInst=`echo $env"tars"`
         #echo $jbInst
@@ -247,63 +190,6 @@ then
         esbTarsHostList=`echo $appHost | tr "," "\n"`
         #echo "TARS srv = " $esbTarsHostList
         for appHost in $esbTarsHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-
-       # Stop catalog
-        jbInst=`echo $env"catalog"`
-        #echo $jbInst
-        echo ""
-        getHostName "esbCatalogHost"
-        esbCatalogHostList=`echo $appHost | tr "," "\n"`
-        #echo "Catalog srv = " $esbCatalogHostList
-        for appHost in $esbCatalogHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-        
-        # Stop live
-        jbInst=`echo $env"live"`
-        #echo $jbInst
-        echo ""
-        getHostName "esbLiveHost"
-        esbLiveHostList=`echo $appHost | tr "," "\n"`
-        #echo "Live srv = " $esbLiveHostList
-        for appHost in $esbLiveHostList
-        do
-           isDone=`echo $hostDone | grep $appHost`
-           if [ "$isDone" = "" ]
-           then
-                 stopComponent $jbInst
-                 hostDone=$hostDone,$appHost
-           fi
-        done
-
-        hostDone=""
-
-        #Stop esbTo-connector-expedia
-        jbInst=`echo $env"to-interface"`
-        #echo $jbInst
-        echo ""
-        getHostNameconnector "interfaceHost"
-        esbconnectorinterfaceHostList=`echo $appHost | tr "," "\n"`
-        #echo "TARS srv = " $esbTarsHostList
-        for appHost in $esbconnectorinterfaceHostList
         do
            isDone=`echo $hostDone | grep $appHost`
            if [ "$isDone" = "" ]
@@ -417,6 +303,54 @@ then
 
         hostDone=""
 
+        # Stop pms-misterbooking
+        jbInstt=`echo "mule-"$env"pms-misterbooking"`
+        echo $jbInstt
+        echo ""
+        getHostName "esbPms-misterbookingHost"
+        esbPmsHostList=`echo $appHost | tr "," "\n"`
+        for appHost in $esbPmsHostList
+        do
+           isDone=`echo $hostDone | grep $appHost`
+           if [ "$isDone" = "" ]
+           then
+
+           echo "#######################################################"
+           echo "       STOP de pms-misterbooking  sur $appHost "
+           echo "#######################################################"
+
+           ssh $ADMIN_USER@$appHost systemctl stop $jbInstt
+
+                 hostDone=$hostDone,$appHost
+           fi
+        done
+
+        hostDone=""
+
+        # Status pms-dedge
+        jbInstt=`echo "mule-"$env"pms-dedge"`
+        echo $jbInstt
+        echo ""
+        getHostName "esbPms-dedgeHost"
+        esbPmsHostList=`echo $appHost | tr "," "\n"`
+        for appHost in $esbPmsHostList
+        do
+           isDone=`echo $hostDone | grep $appHost`
+           if [ "$isDone" = "" ]
+           then
+
+           echo "#######################################################"
+           echo "       STOP de pms-dedge  sur $appHost "
+           echo "#######################################################"
+
+           ssh $ADMIN_USER@$appHost systemctl stop $jbInstt
+
+                 hostDone=$hostDone,$appHost
+           fi
+        done
+
+        hostDone=""
+
         # Stop Front
         jbInst=`echo $env"front"`
         #echo $jbInst
@@ -450,39 +384,31 @@ echo ""
 
 case $comp in
         crm )
-	    getHostName "esbCrmHost";;
+            getHostName "esbCrmHost";;
         front )
-	      getHostName "esbFrontHost";;
-        mycp ) 
-	     getHostName "esbMycpHost";;
+              getHostName "esbFrontHost";;
+        mycp )
+             getHostName "esbMycpHost";;
         sap )
-	    getHostName "esbSapHost";;
-        starlight ) 
+            getHostName "esbSapHost";;
+        starlight )
                   getHostName "esbStarlightHost";;
         editique )
-	         getHostName "esbEditiqueHost";;
-        to-connector-expedia )
-                getHostNameconnector "expediaHost";;
+                 getHostName "esbEditiqueHost";;
         tars )
-	     getHostName "esbTarsHost";;
-	to-connector-rategain )
-	   	 getHostNameconnector "rategainHost";;
-        catalog )
-	        getHostName "esbCatalogHost";;
-	to-connector-csv )
- 	    getHostNameconnector "csvHost";;
-        live )
-	     getHostName "esbLiveHost";;
-	to-interface )
-	          getHostNameconnector "interfaceHost";;
+             getHostName "esbTarsHost";;
         ramses )
-	       getHostName "esbRamsesHost";;
+               getHostName "esbRamsesHost";;
         ap )
-	   getHostName "esbApHost";;
+           getHostName "esbApHost";;
         customer )
-		 getHostName "esbCustomerHost";;
+                 getHostName "esbCustomerHost";;
         pms-prestige )
-	    getHostName "esbPms-prestigeHost";;
+            getHostName "esbPms-prestigeHost";;
+        pms-dedge )
+            getHostName "esbPms-dedgeHost";;
+        pms-misterbooking)
+            getHostName "esbPms-misterbookingHost";;
         * )               echo "Le nom du composant est incorrect"; usage
                           exit 1
 esac

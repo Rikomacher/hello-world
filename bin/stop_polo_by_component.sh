@@ -112,25 +112,6 @@ then
 
 	hostDone=""
 
-	# Arret WS
-	jbInst=`echo $env"ws.service"`
-	#echo $jbInst
-	echo ""
-	getHostName "poloWsHost"
-	poloWsHostsList=`echo $appHost | tr "," "\n"`
-	#echo "Ws srv = " $poloWsHostsList
-	for appHost in $poloWsHostsList
-	do
-	   isDone=`echo $hostDone | grep $appHost`
-	   if [ "$isDone" = "" ]
-	   then
-		 statusComponent $appHost jboss-$jbInst
-		 hostDone=$hostDone,$appHost
-	   fi
-	done
-
-	hostDone=""
-
 	# Arret BackOffice
 	jbInst=`echo $env"backoffice.service"`
 	#echo $jbInst
@@ -260,6 +241,25 @@ then
            echo "       ARRET de $jbInstt sur $appHost "
            echo "#######################################################"
                 ssh -t $ADMIN_USER@$appHost systemctl status $jbInstt
+                 hostDone=$hostDone,$appHost
+           fi
+        done
+
+        hostDone=""
+
+	# Arret WS
+        jbInst=`echo $env"ws.service"`
+        #echo $jbInst
+        echo ""
+        getHostName "poloWsHost"
+        poloWsHostsList=`echo $appHost | tr "," "\n"`
+        #echo "Ws srv = " $poloWsHostsList
+        for appHost in $poloWsHostsList
+        do
+           isDone=`echo $hostDone | grep $appHost`
+           if [ "$isDone" = "" ]
+           then
+                 statusComponent $appHost jboss-$jbInst
                  hostDone=$hostDone,$appHost
            fi
         done
