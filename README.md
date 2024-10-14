@@ -1,6 +1,5 @@
 # Projet-test
-# Edité via VSC
-
+# Edité via VSC pour la Formation Gitlabl - Orsys
 
 
 ## Getting started
