@@ -1,6 +1,11 @@
 # Projet-test
 # Edité via VSC pour la Formation Gitlab - Orsys
 
+## Premier Bloc
+Chaines CI/CD pour déploiements applicatifs
+Objectif: comprendre comment implémenter des pipelines
+
+
 
 ## Getting started
 
