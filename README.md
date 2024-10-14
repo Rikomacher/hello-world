@@ -6,8 +6,8 @@ Chaines CI/CD pour déploiements applicatifs
 Objectif: comprendre comment implémenter des pipelines
 
 ## Deuxième Bloc
-[ ] Comprendre les chaines CI/CD
-[ ] Implémenter un pipeline
+- [ ] Comprendre les chaines CI/CD
+- [ ] Implémenter un pipeline
 
 ## Troisième Bloc
 Mes commentaires: .......
