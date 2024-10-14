@@ -1,5 +1,5 @@
 # Projet-test
-# Edité via VSC pour la Formation Gitlabl - Orsys
+# Edité via VSC pour la Formation Gitlab - Orsys
 
 
 ## Getting started
